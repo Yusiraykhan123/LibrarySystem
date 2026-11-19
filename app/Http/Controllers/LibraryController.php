@@ -105,7 +105,7 @@ class LibraryController extends Controller
     public function storeBook(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'ISBN' => ['required', 'string', 'max:20', 'unique:dbo.Books,ISBN'],
+            'ISBN' => ['required', 'string', 'max:20', 'unique:sqlsrv.dbo.Books,ISBN'],
             'Title' => ['required', 'string', 'max:200'],
             'Author' => ['required', 'string', 'max:150'],
             'PublishedYear' => ['nullable', 'integer', 'between:1,9999'],
@@ -122,7 +122,7 @@ class LibraryController extends Controller
         $data = $request->validate([
             'FirstName' => ['required', 'string', 'max:80'],
             'LastName' => ['required', 'string', 'max:80'],
-            'Email' => ['required', 'email', 'max:254', 'unique:dbo.Members,Email'],
+            'Email' => ['required', 'email', 'max:254', 'unique:sqlsrv.dbo.Members,Email'],
         ]);
 
         DB::table('dbo.Members')->insert($data);
@@ -133,8 +133,8 @@ class LibraryController extends Controller
     public function storeLoan(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'BookID' => ['required', 'integer', 'exists:dbo.Books,BookID'],
-            'MemberID' => ['required', 'integer', 'exists:dbo.Members,MemberID'],
+            'BookID' => ['required', 'integer', 'exists:sqlsrv.dbo.Books,BookID'],
+            'MemberID' => ['required', 'integer', 'exists:sqlsrv.dbo.Members,MemberID'],
             'DueDate' => ['required', 'date', 'after_or_equal:today'],
         ]);
 
@@ -210,7 +210,7 @@ class LibraryController extends Controller
     public function storeFine(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'LoanID' => ['required', 'integer', 'exists:dbo.Loans,LoanID'],
+            'LoanID' => ['required', 'integer', 'exists:sqlsrv.dbo.Loans,LoanID'],
             'Amount' => ['required', 'numeric', 'gt:0', 'max:999999.99'],
         ]);
 
