@@ -1,58 +1,59 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Library Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi manajemen perpustakaan dengan PHP dan Laravel, menggunakan Microsoft SQL Server.
 
-## About Laravel
+## Fitur
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Melihat koleksi buku dan menghitung eksemplar yang tersedia.
+- Menambahkan buku dan anggota.
+- Mencatat peminjaman, mencegah peminjaman saat stok habis, dan mencatat pengembalian.
+- Melihat peminjaman aktif dan buku yang terlambat.
+- Mencatat denda untuk peminjaman yang terlambat dan menandai pembayaran.
+- Melihat jumlah denda yang belum dibayar.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Persyaratan
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.3 atau lebih baru dan Composer.
+- SQL Server dan Microsoft ODBC Driver for SQL Server.
+- Ekstensi PHP `sqlsrv` dan `pdo_sqlsrv` yang cocok dengan versi, arsitektur, dan jenis build PHP.
 
-## Learning Laravel
+Periksa ekstensi dengan:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```powershell
+php -m | Select-String "sqlsrv|pdo_sqlsrv"
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Driver resmi dapat diunduh dari [Microsoft Drivers for PHP for SQL Server](https://learn.microsoft.com/en-us/sql/connect/php/download-drivers-php-sql-server). Jika ekstensi belum muncul, pasang driver yang sesuai dan aktifkan keduanya di `php.ini`, lalu mulai ulang terminal atau web server.
 
-## Contributing
+## Menyiapkan database
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1. Pastikan SQL Server menerima koneksi TCP pada port `1433` atau sesuaikan konfigurasi koneksi.
+2. Dari SQL Server Management Studio (SSMS), hubungkan ke instance SQL Server Anda.
+3. Jalankan `database/01_create_schema.sql`, lalu `database/02_seed_data.sql`. Jalankan seed hanya sekali.
+4. Opsional: jalankan `database/03_practice_queries.sql` untuk berlatih query join dan tanggal jatuh tempo.
 
-## Code of Conduct
+## Menjalankan aplikasi
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Jalankan di PowerShell dari folder proyek ini:
 
-## Security Vulnerabilities
+```powershell
+composer install
+if (-not (Test-Path .env)) { Copy-Item .env.example .env }
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Atur `DB_HOST`, `DB_PORT`, `DB_USERNAME`, dan `DB_PASSWORD` di `.env` sesuai SQL Server Anda. Kosongkan username dan password untuk Windows Integrated Authentication; akun Windows yang menjalankan PHP harus memiliki akses database. Isi keduanya untuk SQL Server Authentication. Konfigurasi komputer pengembang menggunakan TCP pada `localhost:1433`. Untuk SQL Server yang tidak menerima TCP, isi `DB_PORT=null` dan gunakan host yang sesuai untuk koneksi lokal.
 
-## License
+Setelah SQL Server dan ekstensi PHP siap, jalankan:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```powershell
+php artisan key:generate
+php artisan serve --host=127.0.0.1 --port=8000
+```
+
+Buka `http://127.0.0.1:8000`. Jalankan skrip SQL untuk membuat tabel; jangan jalankan `php artisan migrate` karena skema aplikasi dibuat oleh skrip SQL tersebut.
+
+Jalankan tes dengan `php artisan test`.
+
+## Catatan
+
+Aplikasi ini ditujukan untuk belajar dan penggunaan lokal. Aplikasi belum memiliki autentikasi pengguna; jangan publikasikan ke internet sebelum menambahkan autentikasi dan pengamanan akses.
